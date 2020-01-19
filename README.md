@@ -1,13 +1,13 @@
-# FermentWatcher
+# Beerwatcher
 Logging and visualizing temperature and vibrations while fermenting beer, Using QT, Arduino &amp; Raspberry PI
 
 Hobby project still far from complete, goal is creating an interface in Qt running on a Raspberry Pi with display and connect an Arduino to read sensors.
 
 
-### FermentWatcherQt
+### BeerwatcherQt
 Interface to run on Raspberry Pi
 
-### FermentWatcherArduino
+### BeerwatcherArduino
 Sensors
 
 ### Buildroot
