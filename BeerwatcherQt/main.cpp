@@ -1,4 +1,6 @@
 #include "serialportmanager.h"
+#include "serialportreader.h"
+
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
@@ -8,7 +10,7 @@ int main(int argc, char *argv[]) {
   QGuiApplication app(argc, argv);
   app.setOrganizationName("aEneroth");
   app.setOrganizationDomain("aeneroth.com");
-  app.setApplicationName("FermentWatcher");
+  app.setApplicationName("Beerwatcher");
 
   QQmlApplicationEngine engine;
   const QUrl url(QStringLiteral("qrc:/main.qml"));

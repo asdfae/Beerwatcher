@@ -59,9 +59,18 @@ QString SerialPortManager::getProductIdentifier(QString tty) {
 //! \param tty
 //!
 void SerialPortManager::setCurrentPort(QString tty) {
-  qDebug() << "using: " << tty;
   mCurrentPort = tty;
+
+  // Close if open, needed?
+  if (mSerialPort.isOpen()) {
+    mSerialPort.close();
+  }
+
   mSerialPort.setPortName(mCurrentPort);
+
+  if (!mSerialPort.open(QIODevice::ReadWrite)) {
+    qDebug() << mSerialPort.errorString();
+  }
 }
 
 //!
@@ -69,17 +78,10 @@ void SerialPortManager::setCurrentPort(QString tty) {
 //! \param message
 //!
 void SerialPortManager::write(QByteArray message) {
-  qDebug() << "Writing: " << message;
-  if (mSerialPort.open(QIODevice::ReadWrite))
-    mSerialPort.write(message);
-  else {
-    // error
-    qDebug() << mSerialPort.errorString();
-  }
+  mSerialPort.write(message);
 }
 
-void SerialPortManager::readData() {
+void SerialPortManager::read() {
   QByteArray data = mSerialPort.readAll();
-
   qDebug() << data;
 }

@@ -9,8 +9,10 @@ ApplicationWindow {
   height: 480
   title: qsTr("Stack")
 
+  //Keep for future use
   header: ToolBar {
     contentHeight: toolButton.implicitHeight
+    visible: false
 
     ToolButton {
       id: toolButton
@@ -43,7 +45,6 @@ ApplicationWindow {
         text: qsTr("Page 1")
         width: parent.width
         onClicked: {
-          stackView.push("Page1Form.ui.qml")
           drawer.close()
         }
       }
@@ -51,7 +52,6 @@ ApplicationWindow {
         text: qsTr("Page 2")
         width: parent.width
         onClicked: {
-          stackView.push("Page2Form.ui.qml")
           drawer.close()
         }
       }
@@ -144,7 +144,7 @@ ApplicationWindow {
         Row {
           Button {
             text: qsTr("Read")
-            onClicked: serialPortManager.readData()
+            onClicked: serialPortManager.read()
           }
         }
       }
