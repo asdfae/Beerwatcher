@@ -71,6 +71,7 @@ void SerialPortManager::setCurrentPort(QString tty) {
   if (!mSerialPort.open(QIODevice::ReadWrite)) {
     qDebug() << mSerialPort.errorString();
   }
+  mSerialPort.write("start");
 }
 
 //!
@@ -78,10 +79,21 @@ void SerialPortManager::setCurrentPort(QString tty) {
 //! \param message
 //!
 void SerialPortManager::write(QByteArray message) {
-  mSerialPort.write(message);
+  // mSerialPort.write(message);
 }
 
+//!
+//! \brief SerialPortManager::read
+//!
 void SerialPortManager::read() {
-  QByteArray data = mSerialPort.readAll();
+  //  QByteArray data = mSerialPort.readAll();
+  //  qDebug() << data;
+}
+
+void SerialPortManager::send(QByteArray message) {
+  mSerialPort.write(message);
+  mSerialPort.waitForBytesWritten();
+  mSerialPort.waitForReadyRead();
+  QByteArray data = mSerialPort.readLine();
   qDebug() << data;
 }
