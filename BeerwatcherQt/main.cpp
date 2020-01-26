@@ -18,6 +18,9 @@ int main(int argc, char *argv[]) {
   qmlRegisterType<SerialPortManager>("aEneroth.SerialPortManager", 1, 0,
                                      "SerialPortManager");
 
+  //  qmlRegisterType<SerialPortReader>("aEneroth.SerialPortReader", 1, 0,
+  //                                    "SerialPortReader");
+
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreated, &app,
       [url](QObject *obj, const QUrl &objUrl) {

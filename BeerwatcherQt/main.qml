@@ -2,6 +2,7 @@ import QtQuick 2.13
 import QtQuick.Controls 2.13
 import aEneroth.SerialPortManager 1.0
 
+//import aEneroth.SerialPortReader 1.0
 ApplicationWindow {
   id: window
   visible: true
@@ -132,11 +133,15 @@ ApplicationWindow {
 
         Row {
           TextField {
+            id: senderTextField
             placeholderText: qsTr("Message")
-
-            onEditingFinished: {
-              serialPortManager.write(text)
-              text = ""
+            Keys.onEnterPressed: send(event)
+            Keys.onReturnPressed: send(event)
+            function send(e) {
+              if (text != "") {
+                serialPortManager.send(text)
+                text = ""
+              }
             }
           }
         }
@@ -154,4 +159,8 @@ ApplicationWindow {
   SerialPortManager {
     id: serialPortManager
   }
+
+  //  SerialPortReader {
+  //    Component.onCompleted: console.log("done")
+  //  }
 }

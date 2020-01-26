@@ -20,6 +20,7 @@ public:
   Q_INVOKABLE void setCurrentPort(QString tty);
   Q_INVOKABLE void write(QByteArray message);
   Q_INVOKABLE void read();
+  Q_INVOKABLE void send(QByteArray message);
 
 private:
   QString mCurrentPort;
