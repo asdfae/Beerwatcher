@@ -21,4 +21,4 @@
 #/usr/X11R6/bin/Xfbdev		     	f	4755	0	0	-	-	-	-	-
 
 #Manually added
-/sys/class/gpio				r	775	root	gpio	-	-	-	-	-
+#/sys/class/gpio				r	775	root	gpio	-	-	-	-	-
