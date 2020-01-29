@@ -1,3 +1,0 @@
-# <name>				<type>	<mode>	<uid>	<gid>	<major>	<minor>	<start>	<inc>	<count>
-/sys/class/gpio				d	775	root	gpio	-	-	-	-	-
-/sys/class/gpio				r	775	root	gpio	-	-	-	-	-

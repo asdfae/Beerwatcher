@@ -1,1 +1,0 @@
-TARGETDIR=$1
