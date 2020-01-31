@@ -21,16 +21,24 @@ public:
 
   Q_INVOKABLE void setCurrentPort(QString tty);
   Q_INVOKABLE void write(QByteArray message);
-  Q_INVOKABLE void read();
-  Q_INVOKABLE void send(QByteArray message);
 
 signals:
-  void temp(QString data);
+  void temp(float data);
+  void vibrations(int data);
+
+private slots:
+  void handleReadyRead();
+  void handleTimeout();
+  void handleError(QSerialPort::SerialPortError error);
 
 private:
+  void read();
+  void handleMessage(QString message);
+
   QString mCurrentPort;
-  QSerialPort mSerialPort;
-  QTextStream mStandardOutput;
+  QSerialPort *mSerialPort = nullptr;
+  QByteArray mReadData;
+  // QTextStream mStandardOutput();
   QTimer mTimer;
 };
 

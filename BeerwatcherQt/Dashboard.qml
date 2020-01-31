@@ -5,24 +5,25 @@ import QtCharts 2.3
 import aEneroth.SerialPortManager 1.0
 
 Page {
-  Timer {
-    interval: 2000
-    repeat: true
-    running: true
-    triggeredOnStart: true
-    onTriggered: {
-      //Get temp and log.
-      console.log("Getting temp:")
-      serialPortManager.read()
-    }
-  }
-
   Connections {
     target: serialPortManager
     onTemp: {
-      console.log(data)
-      //check tthat data is either blurps or temp
-      mySeries.add(data)
+      //check that data is either blurps or temp
+        if(!isNaN(data)){
+            console.log("Adding", data, " to temp series")
+            tempSeries.add(data)
+        }else {
+            console.log("Unable to parse int.")
+        }
+    }
+    onVibrations: {
+        //check that data is either blurps or temp
+          if(!isNaN(data)){
+              console.log("Adding", data, " to vibration series")
+              vibrationSeries.add(data)
+          }else {
+              console.log("Unable to parse int.")
+          }
     }
   }
 
@@ -31,35 +32,70 @@ Page {
 
     ChartView {
       id: chartView
-      width: 400
-      height: 300
+      width: parent.width
+      height: parent.height
       theme: ChartView.ChartThemeBrownSand
       antialiasing: true
 
       ValueAxis {
-        id: valueAxis
-        min: 0
-        max: mySeries.currentCount + 2
+        id: axisX
+        min: tempSeries.currentCount - 10
+        max: tempSeries.currentCount
         tickCount: 12
         labelFormat: "%.0f"
       }
 
       ValueAxis {
-        id: valueAxisY
-        min: 0
-        max: 40
+        id: axisYTemp
+        min: 10
+        max: 30
         tickCount: 12
         labelFormat: "%.0f"
       }
 
+      ValueAxis {
+        id: axisYVib
+        min: -5
+        max: 200
+        tickCount: 12
+        labelFormat: "%.0f"
+      }
+
+
       SplineSeries {
-        id: mySeries
-        axisX: valueAxis
-        axisY: valueAxisY
+        id: tempSeries
+        name: qsTr("Temp")
+        axisX: axisX
+        axisY: axisYTemp
         property int currentCount: 0
         function add(temp) {
           append(currentCount, temp)
           currentCount++
+            if(temp > axisYTemp.max){
+                axisYTemp.max = temp + 5
+            }
+            if(currentCount > 10){
+                remove(0);
+            }
+        }
+      }
+
+      SplineSeries {
+        id: vibrationSeries
+        name: "Beats"
+        axisX: axisX
+        axisY: axisYVib
+        property int currentCount: 0
+        function add(vib) {
+          append(currentCount, vib)
+          currentCount++
+            if(vib > axisYVib.max){
+                axisYVib.max = vib + 20
+            }
+            if(currentCount > 10){
+                remove(0);
+            }
+            //check if higher then max?
         }
       }
     }

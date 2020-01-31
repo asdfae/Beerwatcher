@@ -50,7 +50,6 @@ Page {
       implicitWidth: 168
       onClicked: {
         console.log("Start clicked")
-        serialPortManager.setCurrentPort("COM4")
         stackView.push("Dashboard.qml")
       }
     }

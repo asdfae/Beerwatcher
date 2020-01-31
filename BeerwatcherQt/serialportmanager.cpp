@@ -4,7 +4,16 @@
 //! \brief SerialPortManager::SerialPortManager
 //!
 SerialPortManager::SerialPortManager(QObject *parent) : QObject(parent) {
-  mSerialPort.setBaudRate(QSerialPort::Baud115200);
+
+  mSerialPort = new QSerialPort();
+  mSerialPort->setBaudRate(QSerialPort::Baud115200);
+
+  connect(mSerialPort, &QSerialPort::readyRead, this,
+          &SerialPortManager::handleReadyRead);
+  connect(mSerialPort, &QSerialPort::errorOccurred, this,
+          &SerialPortManager::handleError);
+  connect(&mTimer, &QTimer::timeout, this, &SerialPortManager::handleTimeout);
+  mTimer.start();
 }
 
 //!
@@ -64,14 +73,16 @@ void SerialPortManager::setCurrentPort(QString tty) {
   mCurrentPort = tty;
 
   // Close if open, needed?
-  if (mSerialPort.isOpen()) {
-    mSerialPort.close();
+  if (mSerialPort->isOpen()) {
+    mSerialPort->close();
   }
 
-  mSerialPort.setPortName(mCurrentPort);
+  mSerialPort->setPortName(mCurrentPort);
 
-  if (!mSerialPort.open(QIODevice::ReadWrite)) {
-    qDebug() << mSerialPort.errorString();
+  if (mSerialPort->open(QIODevice::ReadWrite)) {
+    qDebug() << mSerialPort->isOpen();
+  } else {
+    qDebug() << mSerialPort->errorString();
   }
 }
 
@@ -80,32 +91,68 @@ void SerialPortManager::setCurrentPort(QString tty) {
 //! \param message
 //!
 void SerialPortManager::write(QByteArray message) {
-  // mSerialPort.write(message);
+  mSerialPort->write(message);
+  mSerialPort->waitForBytesWritten();
+  qDebug() << "Sent: " << message << " to arduino";
 }
 
 //!
 //! \brief SerialPortManager::read
 //!
 void SerialPortManager::read() {
-  if (mSerialPort.isOpen()) {
-    mSerialPort.write("t");
-    mSerialPort.waitForBytesWritten();
-    mSerialPort.waitForReadyRead();
-    QString data = mSerialPort.readLine();
-    if (data.contains("\n")) {
-      emit temp(data);
-    } else {
-      read();
+  while (mSerialPort->canReadLine() > 0) {
+    mReadData.append(mSerialPort->readLine());
+    qDebug() << "data: " << mReadData;
+
+    // check if data contains \r\n
+    if (mReadData.contains("\r\n")) {
+      int bytes = mReadData.indexOf("\r\n") + 2;
+      QString message = mReadData.left(bytes);
+      // qDebug() << "message: " << message;
+      // should not be data left? can not be data left?
+      mReadData = mReadData.mid(bytes);
+      handleMessage(message);
     }
-  } else {
-    qDebug() << "port is not open.";
   }
 }
 
-void SerialPortManager::send(QByteArray message) {
-  mSerialPort.write(message);
-  mSerialPort.waitForBytesWritten();
-  mSerialPort.waitForReadyRead();
-  QByteArray data = mSerialPort.readLine();
-  qDebug() << data;
+void SerialPortManager::handleMessage(QString message) {
+  QList<QString> msg = message.split(':');
+  if (msg[0] == "temp") {
+    qDebug() << "temp: " << msg[1].simplified();
+    emit temp(msg[1].simplified().toFloat());
+  } else if (msg[0] == "vibrations") {
+    qDebug() << "vibrations: " << msg[1].simplified();
+    emit vibrations(msg[1].simplified().toInt());
+  } else {
+    // unknown message;
+  }
+}
+
+void SerialPortManager::handleReadyRead() {
+  if (mSerialPort->canReadLine()) {
+    read();
+    if (!mTimer.isActive()) {
+      mTimer.start(5000);
+    }
+  }
+}
+
+//!
+//! \brief SerialPortManager::handleTimeout
+//! Why here? does it always timeout when complete?
+void SerialPortManager::handleTimeout() {
+  if (!mReadData.isEmpty()) {
+    mReadData.clear();
+  }
+}
+
+void SerialPortManager::handleError(QSerialPort::SerialPortError error) {
+  if (error == QSerialPort::ReadError) {
+    qDebug() << QObject::tr("An I/O error occurred while reading "
+                            "the data from port %1, error: %2")
+                    .arg(mSerialPort->portName())
+                    .arg(mSerialPort->errorString())
+             << endl;
+  }
 }

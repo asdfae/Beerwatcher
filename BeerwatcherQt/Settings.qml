@@ -9,8 +9,14 @@ Page {
   ColumnLayout {
     anchors.fill: parent
 
+    Button {
+        text: qsTr("Back")
+        onClicked: stackView.pop()
+    }
+
     Row {
       spacing: 10
+
       ComboBox {
         id: serialPortComboBox
         model: serialPortManager.availablePorts()

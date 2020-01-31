@@ -6,7 +6,6 @@ import QtQuick.Layouts 1.12
 
 import aEneroth.SerialPortManager 1.0
 
-//import aEneroth.SerialPortReader 1.0
 ApplicationWindow {
   id: window
   visible: true
@@ -14,7 +13,7 @@ ApplicationWindow {
   height: 480
   title: qsTr("Stack")
 
-  //contentOrientation: Qt.InvertedPortraitOrientation
+  contentOrientation: Qt.InvertedPortraitOrientation
   MainDrawer {
     id: drawer
   }
@@ -29,8 +28,8 @@ ApplicationWindow {
     id: root
     width: window.width
     height: window.height
+    rotation: 180
 
-    //rotation: 180
     Item {
       id: appContainer
       anchors.left: parent.left
