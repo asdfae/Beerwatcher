@@ -86,8 +86,11 @@ void SerialPortManager::write(QByteArray message) {
 //! \brief SerialPortManager::read
 //!
 void SerialPortManager::read() {
-  //  QByteArray data = mSerialPort.readAll();
-  //  qDebug() << data;
+  mSerialPort.write("temp");
+  mSerialPort.waitForBytesWritten();
+  mSerialPort.waitForReadyRead();
+  QByteArray data = mSerialPort.readAll();
+  qDebug() << data;
 }
 
 void SerialPortManager::send(QByteArray message) {

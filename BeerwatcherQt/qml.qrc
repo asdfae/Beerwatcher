@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>MainDrawer.qml</file>
+        <file>Landing.qml</file>
+        <file>Settings.qml</file>
+        <file>Dashboard.qml</file>
     </qresource>
 </RCC>

@@ -1,4 +1,5 @@
-QT += quick serialport
+TEMPLATE = app
+QT += qml quick serialport virtualkeyboard charts
 
 CONFIG += c++11
 
@@ -34,3 +35,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     serialportmanager.h \
     serialportreader.h
+
