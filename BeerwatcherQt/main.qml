@@ -13,18 +13,24 @@ ApplicationWindow {
   width: 640
   height: 480
   title: qsTr("Stack")
-  contentOrientation: Qt.InvertedPortraitOrientation
 
+  //contentOrientation: Qt.InvertedPortraitOrientation
   MainDrawer {
     id: drawer
+  }
+
+  Shortcut {
+    sequence: "ESC"
+    context: Qt.ApplicationShortcut
+    onActivated: stackView.pop()
   }
 
   Item {
     id: root
     width: window.width
     height: window.height
-    rotation: 180
 
+    //rotation: 180
     Item {
       id: appContainer
       anchors.left: parent.left

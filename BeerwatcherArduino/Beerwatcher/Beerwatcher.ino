@@ -15,10 +15,11 @@ DallasTemperature sensors(&oneWire);
 /********************************************************************/
 
 String incomingMessage = "";
+unsigned long countSinceLastRead = 0;
 
 void setup(void) {
   // start serial port
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Running");
   // Start up the library
   sensors.begin();
@@ -26,17 +27,24 @@ void setup(void) {
 
 void loop(void) {
 
-  sensors.requestTemperatures();
-  sensors.getTempCByIndex(0);
-
-  if (Serial.available() > 0) {
-    // read the incoming byte:
-    incomingMessage = Serial.readString();
-
-    // say what you got:
-    Serial.print("I received: ");
-    Serial.println(sensors.getTempCByIndex(0));
+  while (Serial.available() > 0) {
+    handleIncomingMessage();
   }
+  countSinceLastRead = countSinceLastRead +1;
+  delay(1);
+}
 
-  delay(100);
+void handleIncomingMessage(){
+  
+  incomingMessage = Serial.readString();
+  if(incomingMessage == "t"){      
+    sensors.requestTemperatures();
+    delay(2);
+    Serial.println(String(sensors.getTempCByIndex(0)));
+  }else if(incomingMessage == "b"){
+    Serial.println(countSinceLastRead);
+    countSinceLastRead = 0;
+  }else {
+     Serial.println("Unknown input" + String(incomingMessage));
+    }
 }

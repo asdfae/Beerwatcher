@@ -3,7 +3,9 @@
 //!
 //! \brief SerialPortManager::SerialPortManager
 //!
-SerialPortManager::SerialPortManager() {}
+SerialPortManager::SerialPortManager(QObject *parent) : QObject(parent) {
+  mSerialPort.setBaudRate(QSerialPort::Baud115200);
+}
 
 //!
 //! \brief SerialPortManager::availablePorts
@@ -71,7 +73,6 @@ void SerialPortManager::setCurrentPort(QString tty) {
   if (!mSerialPort.open(QIODevice::ReadWrite)) {
     qDebug() << mSerialPort.errorString();
   }
-  mSerialPort.write("start");
 }
 
 //!
@@ -86,11 +87,19 @@ void SerialPortManager::write(QByteArray message) {
 //! \brief SerialPortManager::read
 //!
 void SerialPortManager::read() {
-  mSerialPort.write("temp");
-  mSerialPort.waitForBytesWritten();
-  mSerialPort.waitForReadyRead();
-  QByteArray data = mSerialPort.readAll();
-  qDebug() << data;
+  if (mSerialPort.isOpen()) {
+    mSerialPort.write("t");
+    mSerialPort.waitForBytesWritten();
+    mSerialPort.waitForReadyRead();
+    QString data = mSerialPort.readLine();
+    if (data.contains("\n")) {
+      emit temp(data);
+    } else {
+      read();
+    }
+  } else {
+    qDebug() << "port is not open.";
+  }
 }
 
 void SerialPortManager::send(QByteArray message) {

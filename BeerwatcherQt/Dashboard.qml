@@ -6,9 +6,10 @@ import aEneroth.SerialPortManager 1.0
 
 Page {
   Timer {
-    interval: 1000
+    interval: 2000
     repeat: true
     running: true
+    triggeredOnStart: true
     onTriggered: {
       //Get temp and log.
       console.log("Getting temp:")
@@ -16,22 +17,51 @@ Page {
     }
   }
 
+  Connections {
+    target: serialPortManager
+    onTemp: {
+      console.log(data)
+      //check tthat data is either blurps or temp
+      mySeries.add(data)
+    }
+  }
+
   ColumnLayout {
     anchors.fill: parent
 
     ChartView {
-        width: 400
-        height: 300
-        theme: ChartView.ChartThemeBrownSand
-        antialiasing: false
+      id: chartView
+      width: 400
+      height: 300
+      theme: ChartView.ChartThemeBrownSand
+      antialiasing: true
 
-        BarSeries {
-            id: mySeries
-            axisX: BarCategoryAxis { categories: ["2007", "2008", "2009", "2010", "2011", "2012" ] }
-            BarSet { label: "Bob"; values: [2, 2, 3, 4, 5, 6] }
-            BarSet { label: "Susan"; values: [5, 1, 2, 4, 1, 7] }
-            BarSet { label: "James"; values: [3, 5, 8, 13, 5, 8] }
+      ValueAxis {
+        id: valueAxis
+        min: 0
+        max: mySeries.currentCount + 2
+        tickCount: 12
+        labelFormat: "%.0f"
+      }
+
+      ValueAxis {
+        id: valueAxisY
+        min: 0
+        max: 40
+        tickCount: 12
+        labelFormat: "%.0f"
+      }
+
+      SplineSeries {
+        id: mySeries
+        axisX: valueAxis
+        axisY: valueAxisY
+        property int currentCount: 0
+        function add(temp) {
+          append(currentCount, temp)
+          currentCount++
         }
+      }
     }
   }
 }

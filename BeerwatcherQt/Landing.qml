@@ -14,7 +14,8 @@ Page {
         console.log("Setting port to:", ports[port])
         serialPortManager.setCurrentPort(ports[port])
         break
-      }else {
+      } else {
+
         //alert user that no arduino was found.
       }
     }
@@ -49,6 +50,7 @@ Page {
       implicitWidth: 168
       onClicked: {
         console.log("Start clicked")
+        serialPortManager.setCurrentPort("COM4")
         stackView.push("Dashboard.qml")
       }
     }
