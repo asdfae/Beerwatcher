@@ -9,26 +9,26 @@ DBConnection::DBConnection(QObject *parent) : QObject(parent) {
   QString databaseUsername = "beerwatch";
   QString databasePassword = "'beerwatch'";
 
-  QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-  db.setHostName("localhost");
-  db.setDatabaseName("beerwatch");
-  db.setUserName("beerwatch");
-  db.setPassword("beerwatch");
+  mDb = QSqlDatabase::addDatabase("QPSQL");
+  mDb.setHostName("localhost");
+  mDb.setDatabaseName("beerwatch");
+  mDb.setUserName("beerwatch");
+  mDb.setPassword("beerwatch");
 
   // Check if ok, else assume dabase is not create, so we create it and add our
   // beerwatch user.
-  if (!db.open()) {
+  if (!mDb.open()) {
     qDebug() << "Unable to connect to database, checking if we can create it";
-    db.setUserName("postgres");
-    db.setPassword("");
-    db.setDatabaseName("");
-    if (!db.open()) {
+    mDb.setUserName("postgres");
+    mDb.setPassword("");
+    mDb.setDatabaseName("");
+    if (!mDb.open()) {
       qDebug() << "Unable to connect to postgres. is server running?";
     } else {
 
       // Create database
       qDebug() << "Connected as postgres, creating database.";
-      QSqlQuery query(db);
+      QSqlQuery query(mDb);
       if (query.exec("CREATE DATABASE " + databaseName)) {
         qDebug() << "Successfully created database: " << databaseName;
       } else {
@@ -60,12 +60,12 @@ DBConnection::DBConnection(QObject *parent) : QObject(parent) {
       }
 
       // Change database to the one we created.
-      db.close();
-      db.setUserName(databaseUsername);
-      db.setPassword(databasePassword);
-      db.setDatabaseName(databaseName);
+      mDb.close();
+      mDb.setUserName(databaseUsername);
+      mDb.setPassword(databasePassword);
+      mDb.setDatabaseName(databaseName);
 
-      if (db.open()) {
+      if (mDb.open()) {
         qDebug() << "Successfully connected to new database";
       }
     }
@@ -74,9 +74,9 @@ DBConnection::DBConnection(QObject *parent) : QObject(parent) {
   }
 
   // Check if tables exists
-  if (db.tables() == QStringList()) {
+  if (mDb.tables() == QStringList()) {
     qDebug() << "Could not find any tables, creating.";
-    QSqlQuery query(db);
+    QSqlQuery query(mDb);
     bool ok = query.exec("CREATE TABLE sessions(id smallserial PRIMARY KEY, "
                          "name VARCHAR (50) UNIQUE NOT NULL, "
                          "created_at TIMESTAMP NOT NULL)");
@@ -87,7 +87,43 @@ DBConnection::DBConnection(QObject *parent) : QObject(parent) {
       qDebug() << "Unable to create table sessions - "
                << query.lastError().text();
     }
+
+    // Create datapoints
+    query.clear();
+    ok = query.exec(
+        "CREATE TABLE data_points(session_id INTEGER REFERENCES sessions(id),"
+        "type INTEGER NOT NULL,"
+        "value NUMERIC (4, 2) NOT NULL,"
+        "created_at TIMESTAMP NOT NULL)");
+    if (ok) {
+      qDebug() << "Successfully created data points table";
+    } else {
+      qDebug() << "Unable to create data points table - " << query.lastError();
+    }
   }
 }
 
-void DBConnection::connect() { qDebug() << "Connnecting"; }
+void DBConnection::connect() {
+  // Test adding a session & point
+  qDebug() << "Connnecting";
+
+  QSqlQuery query(mDb);
+  query.prepare(
+      "INSERT INTO sessions (name, created_at) VALUES(:name, :created_at)");
+  query.bindValue(":name", "testsession4");
+  query.bindValue(":created_at", QDateTime::currentDateTime());
+
+  qDebug() << "Inserting session: " << query.exec();
+
+  QVariant lastId = query.lastInsertId();
+  query.clear();
+
+  query.prepare("INSERT INTO data_points (session_id, type, value, created_at) "
+                "VALUES(:session_id, :type, :value, :created_at)");
+  query.bindValue(":session_id", lastId);
+  query.bindValue(":type", TEMPERATURE);
+  query.bindValue(":value", 22.21);
+  query.bindValue(":created_at", QDateTime::currentDateTime());
+
+  qDebug() << "inserting data_point: " << query.exec();
+}
