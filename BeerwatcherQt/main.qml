@@ -5,6 +5,7 @@ import QtQuick.VirtualKeyboard.Settings 2.2
 import QtQuick.Layouts 1.12
 
 import aEneroth.SerialPortManager 1.0
+import aEneroth.DBConnection 1.0
 
 ApplicationWindow {
   id: window
@@ -14,6 +15,9 @@ ApplicationWindow {
   title: qsTr("Stack")
 
   contentOrientation: Qt.InvertedPortraitOrientation
+
+
+
   MainDrawer {
     id: drawer
   }
@@ -47,6 +51,11 @@ ApplicationWindow {
 
       SerialPortManager {
         id: serialPortManager
+      }
+
+      DBconnection{
+        id: dbConnection
+        Component.onCompleted: dbConnection.connect()
       }
     }
 

@@ -1,103 +1,102 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Controls.Material 2.12
 import QtCharts 2.3
 import aEneroth.SerialPortManager 1.0
 
 Page {
-  Connections {
-    target: serialPortManager
-    onTemp: {
-      //check that data is either blurps or temp
-        if(!isNaN(data)){
-            console.log("Adding", data, " to temp series")
-            tempSeries.add(data)
-        }else {
-            console.log("Unable to parse int.")
-        }
-    }
-    onVibrations: {
-        //check that data is either blurps or temp
-          if(!isNaN(data)){
-              console.log("Adding", data, " to vibration series")
-              vibrationSeries.add(data)
-          }else {
-              console.log("Unable to parse int.")
-          }
-    }
-  }
+  topPadding: 15
+  leftPadding: 15
+  rightPadding: 15
+  bottomPadding: 0
 
   ColumnLayout {
     anchors.fill: parent
 
-    ChartView {
-      id: chartView
+    RowLayout {
+      height: parent.height / 3
       width: parent.width
-      height: parent.height
-      theme: ChartView.ChartThemeBrownSand
-      antialiasing: true
+      ColumnLayout {
+        Label {
+          text: "BeerWatcher"
+          color: "#F3CA3E"
+          font.pixelSize: 36
+        }
 
-      ValueAxis {
-        id: axisX
-        min: tempSeries.currentCount - 10
-        max: tempSeries.currentCount
-        tickCount: 12
-        labelFormat: "%.0f"
-      }
+        Item {
+          height: 20
+        }
 
-      ValueAxis {
-        id: axisYTemp
-        min: 10
-        max: 30
-        tickCount: 12
-        labelFormat: "%.0f"
-      }
+        Label {
+          text: qsTr("Time")
+        }
+        Label {
+          id: timeLabel
 
-      ValueAxis {
-        id: axisYVib
-        min: -5
-        max: 200
-        tickCount: 12
-        labelFormat: "%.0f"
-      }
+          Timer{
+            interval: 1000
+            running: true
+            repeat: true
+            triggeredOnStart: true
+            onTriggered: {
 
-
-      SplineSeries {
-        id: tempSeries
-        name: qsTr("Temp")
-        axisX: axisX
-        axisY: axisYTemp
-        property int currentCount: 0
-        function add(temp) {
-          append(currentCount, temp)
-          currentCount++
-            if(temp > axisYTemp.max){
-                axisYTemp.max = temp + 5
+              timeLabel.text = new Date().toLocaleTimeString(Qt.locale(), Locale.ShortFormat);
             }
-            if(currentCount > 10){
-                remove(0);
-            }
+          }
+
         }
       }
+      Item {Layout.fillWidth: true}
 
-      SplineSeries {
-        id: vibrationSeries
-        name: "Beats"
-        axisX: axisX
-        axisY: axisYVib
-        property int currentCount: 0
-        function add(vib) {
-          append(currentCount, vib)
-          currentCount++
-            if(vib > axisYVib.max){
-                axisYVib.max = vib + 20
-            }
-            if(currentCount > 10){
-                remove(0);
-            }
-            //check if higher then max?
+      ColumnLayout {
+        Button {
+          text: qsTr("Go Back")
+          highlighted: true
+          font.pixelSize: 14
+          Layout.alignment: Qt.AlignHCenter
+          Layout.preferredHeight: 58
+          Layout.preferredWidth: 190
+
+          background: Rectangle {
+            color: Material.accent
+            radius: 15
+          }
+          onClicked: {
+            console.log("Go back pushed")
+            stackView.pop()
+          }
+        }
+
+        Button {
+          text: qsTr("☰ Saved data")
+          highlighted: true
+          background: Rectangle {
+            color: "transparent"
+            border.color: Material.accent
+            border.width: 1
+            radius: 15
+          }
+
+          font.pixelSize: 14
+          Layout.alignment: Qt.AlignHCenter
+          Layout.preferredHeight: 58
+          Layout.preferredWidth: 190
+
+          onClicked: {
+            console.log("Go back pushed")
+            stackView.pop()
+          }
         }
       }
+    }
+
+    Label {
+      text: qsTr("Temperature & vibrations over time")
+    }
+
+    BeerChart {
+      Layout.fillHeight: true
     }
   }
 }

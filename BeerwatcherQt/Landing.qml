@@ -45,9 +45,9 @@ Page {
       highlighted: true
       font.pixelSize: 14
       Layout.alignment: Qt.AlignHCenter
-      implicitHeight: 48
-      height: 48
-      implicitWidth: 168
+      Layout.preferredHeight: 68
+      Layout.preferredWidth: 168
+
       onClicked: {
         console.log("Start clicked")
         stackView.push("Dashboard.qml")

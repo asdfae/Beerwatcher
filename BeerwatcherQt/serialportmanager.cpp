@@ -102,7 +102,7 @@ void SerialPortManager::write(QByteArray message) {
 void SerialPortManager::read() {
   while (mSerialPort->canReadLine() > 0) {
     mReadData.append(mSerialPort->readLine());
-    qDebug() << "data: " << mReadData;
+    // qDebug() << "data: " << mReadData;
 
     // check if data contains \r\n
     if (mReadData.contains("\r\n")) {
@@ -119,10 +119,10 @@ void SerialPortManager::read() {
 void SerialPortManager::handleMessage(QString message) {
   QList<QString> msg = message.split(':');
   if (msg[0] == "temp") {
-    qDebug() << "temp: " << msg[1].simplified();
+    // qDebug() << "temp: " << msg[1].simplified();
     emit temp(msg[1].simplified().toFloat());
   } else if (msg[0] == "vibrations") {
-    qDebug() << "vibrations: " << msg[1].simplified();
+    // qDebug() << "vibrations: " << msg[1].simplified();
     emit vibrations(msg[1].simplified().toInt());
   } else {
     // unknown message;

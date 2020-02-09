@@ -1,5 +1,5 @@
 TEMPLATE = app
-QT += qml quick serialport virtualkeyboard charts
+QT += qml quick serialport virtualkeyboard charts sql
 
 CONFIG += c++11
 
@@ -16,8 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        serialportmanager.cpp \
-        serialportreader.cpp
+        dbconnection.cpp \
+        serialportmanager.cpp
 
 RESOURCES += qml.qrc
 
@@ -33,6 +33,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    serialportmanager.h \
-    serialportreader.h
+    dbconnection.h \
+    serialportmanager.h
 
