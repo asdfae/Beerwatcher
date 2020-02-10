@@ -93,7 +93,7 @@ DBConnection::DBConnection(QObject *parent) : QObject(parent) {
     ok = query.exec(
         "CREATE TABLE data_points(session_id INTEGER REFERENCES sessions(id),"
         "type INTEGER NOT NULL,"
-        "value NUMERIC (4, 2) NOT NULL,"
+        "value NUMERIC (6, 2) NOT NULL,"
         "created_at TIMESTAMP NOT NULL)");
     if (ok) {
       qDebug() << "Successfully created data points table";
@@ -103,27 +103,46 @@ DBConnection::DBConnection(QObject *parent) : QObject(parent) {
   }
 }
 
-void DBConnection::connect() {
-  // Test adding a session & point
-  qDebug() << "Connnecting";
-
+void DBConnection::addDataPoint(QVariant value, int type) {
+  // qDebug() << "Adding datapoint: " << value;
   QSqlQuery query(mDb);
-  query.prepare(
-      "INSERT INTO sessions (name, created_at) VALUES(:name, :created_at)");
-  query.bindValue(":name", "testsession4");
-  query.bindValue(":created_at", QDateTime::currentDateTime());
-
-  qDebug() << "Inserting session: " << query.exec();
-
-  QVariant lastId = query.lastInsertId();
-  query.clear();
+  // Get last session
 
   query.prepare("INSERT INTO data_points (session_id, type, value, created_at) "
                 "VALUES(:session_id, :type, :value, :created_at)");
-  query.bindValue(":session_id", lastId);
-  query.bindValue(":type", TEMPERATURE);
-  query.bindValue(":value", 22.21);
+  query.bindValue(":session_id", mActiveSession);
+  query.bindValue(":type", type);
+  query.bindValue(":value", value);
   query.bindValue(":created_at", QDateTime::currentDateTime());
 
-  qDebug() << "inserting data_point: " << query.exec();
+  if (!query.exec()) {
+    qDebug() << query.lastError().text();
+    qDebug() << "Value: " << value;
+  }
+}
+
+void DBConnection::createNewSession() {
+  QSqlQuery query(mDb);
+  query.prepare(
+      "INSERT INTO sessions (name, created_at) VALUES(:name, :created_at)");
+  query.bindValue(":name", QDateTime::currentDateTime());
+  query.bindValue(":created_at", QDateTime::currentDateTime());
+
+  if (!query.exec()) {
+    qDebug() << query.lastError().text();
+  }
+
+  mActiveSession = query.lastInsertId().toInt();
+};
+
+void DBConnection::resumeSession() {
+  QSqlQuery query(mDb);
+  // Get last session
+  if (!query.exec("SELECT * FROM sessions ORDER BY created_at DESC")) {
+    qDebug() << query.lastError().text();
+  }
+
+  qDebug() << query.first();
+  mActiveSession = query.value(0).toInt();
+  qDebug() << "Last session id is: " << mActiveSession;
 }

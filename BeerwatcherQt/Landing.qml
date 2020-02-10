@@ -40,17 +40,37 @@ Page {
       height: 15
     }
 
-    Button {
-      text: qsTr("Start")
-      highlighted: true
-      font.pixelSize: 14
-      Layout.alignment: Qt.AlignHCenter
-      Layout.preferredHeight: 68
+    RowLayout {
       Layout.preferredWidth: 168
+      spacing: 10
+      Button {
+        text: qsTr("Start")
+        highlighted: true
+        font.pixelSize: 14
+        Layout.alignment: Qt.AlignHCenter
+        Layout.preferredHeight: 68
+        Layout.fillWidth: true
 
-      onClicked: {
-        console.log("Start clicked")
-        stackView.push("Dashboard.qml")
+        onClicked: {
+          console.log("Start clicked")
+          dbConnection.createNewSession()
+          stackView.push("Dashboard.qml")
+        }
+      }
+
+      Button {
+        text: qsTr("Resume")
+        highlighted: true
+        font.pixelSize: 14
+        Layout.alignment: Qt.AlignHCenter
+        Layout.preferredHeight: 68
+        Layout.fillWidth: true
+
+        onClicked: {
+          console.log("Resume clicked")
+          dbConnection.resumeSession()
+          stackView.push("Dashboard.qml")
+        }
       }
     }
 

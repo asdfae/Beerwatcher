@@ -1,5 +1,6 @@
 #include "dbconnection.h"
 #include "serialportmanager.h"
+#include "systemactions.h"
 
 #include <QApplication>
 #include <QProcess>
@@ -30,6 +31,8 @@ int main(int argc, char *argv[]) {
                                      "SerialPortManager");
 
   qmlRegisterType<DBConnection>("aEneroth.DBConnection", 1, 0, "DBconnection");
+  qmlRegisterType<SystemActions>("aEneroth.SystemActions", 1, 0,
+                                 "SystemActions");
 
   QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
                    [url](QObject *obj, const QUrl &objUrl) {

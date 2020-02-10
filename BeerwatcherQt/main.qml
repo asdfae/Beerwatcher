@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.12
 
 import aEneroth.SerialPortManager 1.0
 import aEneroth.DBConnection 1.0
+import aEneroth.SystemActions 1.0
 
 ApplicationWindow {
   id: window
@@ -14,12 +15,52 @@ ApplicationWindow {
   height: 480
   title: qsTr("Stack")
 
-  contentOrientation: Qt.InvertedPortraitOrientation
-
-
-
   MainDrawer {
     id: drawer
+  }
+
+  MouseArea {
+    id: screenMouseArea
+    anchors.fill: parent
+    z: 10
+
+    propagateComposedEvents: true
+    onClicked: {
+      mouse.accepted = false
+
+    }
+    onPressed:{
+      mouse.accepted = false
+      console.log("screen pressed")
+      systemActions.setBrightness(120)
+      systemActions.setScreenState(SystemActions.ON)
+
+      screensaverTimer.restart()
+      screenOffTimer.stop()
+    }
+    onReleased: mouse.accepted = false
+    onDoubleClicked: mouse.accepted = false
+    onPositionChanged: mouse.accepted = false
+    onPressAndHold: mouse.accepted = false
+
+    Timer {
+      id: screensaverTimer
+      interval: 12000
+      running: true
+      onTriggered: {
+        systemActions.setBrightness(30)
+        screenOffTimer.start()
+      }
+    }
+
+    Timer {
+      id: screenOffTimer
+      interval: 30000
+      running: false
+      onTriggered: {
+        systemActions.setScreenState(SystemActions.OFF)
+      }
+    }
   }
 
   Shortcut {
@@ -45,7 +86,6 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
         anchors.centerIn: parent
-
         initialItem: Landing {}
       }
 
@@ -53,9 +93,12 @@ ApplicationWindow {
         id: serialPortManager
       }
 
-      DBconnection{
+      DBconnection {
         id: dbConnection
-        Component.onCompleted: dbConnection.connect()
+      }
+
+      SystemActions {
+        id: systemActions
       }
     }
 

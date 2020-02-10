@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtCharts 2.3
 import aEneroth.SerialPortManager 1.0
+import aEneroth.DBConnection 1.0
 import QtQuick.Controls.Material 2.12
 
 ChartView {
@@ -21,6 +22,7 @@ ChartView {
       if (!isNaN(data)) {
         //console.log("Adding", data, " to temp series")
         tempSeries.add(data)
+        dbConnection.addDataPoint(data.toFixed(2), DBconnection.TEMPERATURE)
       } else {
         console.log("Unable to parse int.")
       }
@@ -30,6 +32,7 @@ ChartView {
       if (!isNaN(data)) {
         //console.log("Adding", data, " to vibration series")
         vibrationSeries.add(data)
+        dbConnection.addDataPoint(data.toFixed(2), DBconnection.VIBRATIONS)
       } else {
         console.log("Unable to parse int.")
       }
