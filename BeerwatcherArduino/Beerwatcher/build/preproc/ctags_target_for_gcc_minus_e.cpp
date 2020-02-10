@@ -1,3 +1,4 @@
+# 1 "/home/albin/Projects/Beerwatcher/BeerwatcherArduino/Beerwatcher/Beerwatcher.ino"
 String incomingMessage = "";
 
 const long interval = 1000;
@@ -21,8 +22,8 @@ void setup(void) {
   Serial.begin(115200);
   Serial.println("Running");
 
-  pinMode(ledPin, OUTPUT);
-  pinMode(vibPin, INPUT);
+  pinMode(ledPin, 0x1);
+  pinMode(vibPin, 0x0);
 
 }
 
@@ -45,11 +46,11 @@ void loop(void) {
     vibCount = 0;
   }
   vibVal = digitalRead(vibPin);
-  if(vibVal == HIGH) {
-    digitalWrite(ledPin, LOW);
+  if(vibVal == 0x1) {
+    digitalWrite(ledPin, 0x0);
   } else {
     vibCount ++;
-    digitalWrite(ledPin, HIGH);
+    digitalWrite(ledPin, 0x1);
   }
 
 }

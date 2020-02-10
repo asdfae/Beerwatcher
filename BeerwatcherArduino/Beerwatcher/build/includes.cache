@@ -1,0 +1,17 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/home/albin/Downloads/arduino-1.8.11/hardware/arduino/avr/cores/arduino"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/home/albin/Downloads/arduino-1.8.11/hardware/arduino/avr/variants/standard"
+  },
+  {
+    "Sourcefile": "/home/albin/Projects/Beerwatcher/BeerwatcherArduino/Beerwatcher/build/sketch/Beerwatcher.ino.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]

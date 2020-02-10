@@ -1,3 +1,5 @@
+#include <Arduino.h>
+#line 1 "/home/albin/Projects/Beerwatcher/BeerwatcherArduino/Beerwatcher/Beerwatcher.ino"
 String incomingMessage = "";
 
 const long interval = 1000;
@@ -16,6 +18,13 @@ int vibPin = 3;
 int vibCount = 0;
 int vibVal;
 
+#line 19 "/home/albin/Projects/Beerwatcher/BeerwatcherArduino/Beerwatcher/Beerwatcher.ino"
+void setup(void);
+#line 29 "/home/albin/Projects/Beerwatcher/BeerwatcherArduino/Beerwatcher/Beerwatcher.ino"
+void loop(void);
+#line 57 "/home/albin/Projects/Beerwatcher/BeerwatcherArduino/Beerwatcher/Beerwatcher.ino"
+void handleIncomingMessage();
+#line 19 "/home/albin/Projects/Beerwatcher/BeerwatcherArduino/Beerwatcher/Beerwatcher.ino"
 void setup(void) {
   // start serial port
   Serial.begin(115200);
@@ -58,3 +67,4 @@ void handleIncomingMessage(){
   incomingMessage = Serial.readString();
   Serial.println("Unknown input" + String(incomingMessage));
 }
+

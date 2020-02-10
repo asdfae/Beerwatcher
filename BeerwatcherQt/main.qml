@@ -5,18 +5,27 @@ import QtQuick.VirtualKeyboard.Settings 2.2
 import QtQuick.Layouts 1.12
 
 import aEneroth.SerialPortManager 1.0
+import aEneroth.DBConnection 1.0
 
-//import aEneroth.SerialPortReader 1.0
 ApplicationWindow {
   id: window
   visible: true
   width: 640
   height: 480
   title: qsTr("Stack")
+
   contentOrientation: Qt.InvertedPortraitOrientation
+
+
 
   MainDrawer {
     id: drawer
+  }
+
+  Shortcut {
+    sequence: "ESC"
+    context: Qt.ApplicationShortcut
+    onActivated: stackView.pop()
   }
 
   Item {
@@ -42,6 +51,11 @@ ApplicationWindow {
 
       SerialPortManager {
         id: serialPortManager
+      }
+
+      DBconnection{
+        id: dbConnection
+        Component.onCompleted: dbConnection.connect()
       }
     }
 
