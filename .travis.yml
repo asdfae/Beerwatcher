@@ -1,8 +1,9 @@
 language: c
 sudo: false
-cache: directories:
-  - ~/arduino_ide
-  - ~/.arduino15/packages/
+cache: 
+  directories:
+    - ~/arduino_ide
+    - ~/.arduino15/packages/
 git:
   depth: false
   quiet: false
@@ -12,7 +13,7 @@ env:
 before_install:
   - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
 install:
-
+  - arduino --install-library "Adafruit SleepyDog"
 script:
   - build_main_platforms
 notifications:
