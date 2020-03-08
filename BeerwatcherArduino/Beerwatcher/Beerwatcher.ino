@@ -6,6 +6,7 @@ unsigned long previousMillis = 0;
 // Temp sensor pin
 // NOTE: board im using is labeld wrong + & - are swapped.
 int tempPin = A1;
+int soundPin = A5;
 int volt;
 int boardResistor = 10000;
 float logR2, r2, t;
@@ -15,6 +16,8 @@ int ledPin = 13;
 int vibPin = 3;
 int vibCount = 0;
 int vibVal;
+
+float threshold = 2.57;
 
 void setup(void) {
   // start serial port
@@ -44,12 +47,9 @@ void loop(void) {
     Serial.println("vibrations:" + String(vibCount));
     vibCount = 0;
   }
-  vibVal = digitalRead(vibPin);
-  if(vibVal == HIGH) {
-    digitalWrite(ledPin, LOW);
-  } else {
+ 
+  if(checkSound()) {
     vibCount ++;
-    digitalWrite(ledPin, HIGH);
   }
 
 }
@@ -58,3 +58,17 @@ void handleIncomingMessage(){
   incomingMessage = Serial.readString();
   Serial.println("Unknown input" + String(incomingMessage));
 }
+
+boolean checkSound(){
+    int aValue = 0;                             // raw analog value
+    float volts;                                // analog voltage value                    
+    aValue = analogRead(soundPin);             // analog values from 0-1023, 5V max
+    volts = (aValue*5.0)/1024.0;
+    
+    if (volts > threshold){
+      //Serial.print(" volts = ");Serial.println(volts);
+      return true;
+    }
+    return false;
+
+  }
